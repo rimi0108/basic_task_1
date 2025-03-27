@@ -70,15 +70,12 @@ from torch import nn
 
 
 class Model(nn.Module):
-  def __init__(self, input_dim, n_dim, class_num):
+  def __init__(self, input_dim, n_dim):
     super().__init__()
 
-    # 첫 번째 은닉층: input_dim 차원을 n_dim 차원으로 변환
     self.layer1 = nn.Linear(input_dim, n_dim)
-    # 두 번째 은닉층: n_dim 차원의 은닉층을 다시 n_dim 차원으로 변환
     self.layer2 = nn.Linear(n_dim, n_dim)
-   	# 세 번째 은닉층: n_dim 차원에서 클래스 수로 출력
-    self.layer3 = nn.Linear(n_dim, class_num) # 🔄 클래스 수만큼!
+    self.layer3 = nn.Linear(n_dim, 1)
 
     self.act = nn.ReLU()
 
@@ -86,11 +83,12 @@ class Model(nn.Module):
     x = torch.flatten(x, start_dim=1)
     x = self.act(self.layer1(x))
     x = self.act(self.layer2(x))
-    x = self.layer3(x) # 출력층 (layer3 에서 activation 뺌)
-
-    # CrossEntropyLoss에서 softmax 안 해도 됨
+    x = self.act(self.layer3(x))
 
     return x
+
+
+model = Model(28 * 28 * 1, 1024)
 ```
 
 후
